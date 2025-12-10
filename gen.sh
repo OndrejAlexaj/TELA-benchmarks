@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Check arguments
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <file_with_formula_paths> <tool_command>"
     exit 1
@@ -9,7 +8,6 @@ fi
 PATHS_FILE="$1"
 TOOL="$2"
 
-# Check that the file with paths exists
 if [ ! -f "$PATHS_FILE" ]; then
     echo "Error: file '$PATHS_FILE' not found"
     exit 1
@@ -26,7 +24,6 @@ i=1
 while IFS= read -r INPUT_FILE; do
     [ -z "$INPUT_FILE" ] && continue
 
-    # Check that the formula file exists
     if [ ! -f "$INPUT_FILE" ]; then
         echo "Warning: formula file '$INPUT_FILE' not found, skipping."
         continue
@@ -39,7 +36,7 @@ while IFS= read -r INPUT_FILE; do
         echo "Processing formula $i from file $INPUT_FILE: $formula"
 
         "$TOOL" -f "$formula" | awk '/^HOA: v1/ {flag=1} flag' > "$OUTDIR/out_$i.hoa"
-        ../ba-compl-eval/util/classify_ba.sh --csv "$OUTDIR/out_$i.hoa" >> "$classifications"
+        ./classify_ba.sh --csv "$OUTDIR/out_$i.hoa" >> "$classifications"
 
         i=$((i+1))
     done < "$INPUT_FILE"
